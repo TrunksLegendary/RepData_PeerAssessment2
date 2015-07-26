@@ -9,8 +9,8 @@ output:
 
 ```{r library.load, message=FALSE, warning=FALSE}
 library(knitr)
-library(dplyr)
 library(tidyr)
+library(dplyr)
 library(lubridate)
 library(ggplot2)
 library(scales)
@@ -18,7 +18,8 @@ library(scales)
 
 ```{r setup.options, message=FALSE, warning=FALSE}
 Sys.setlocale("LC_TIME","C")
-opts_chunk$set(cache=TRUE)
+#opts_chunk$set(cache=TRUE)
+opts_chunk$set(cache=FALSE)
 options(scipen=6)
 ```
 
@@ -142,8 +143,8 @@ health.impacts <- stormData %>% group_by(EVTYPE) %>%
               TOTAL=FATALITIES+INJURIES) %>%
     arrange(desc(TOTAL),desc(FATALITIES),desc(INJURIES))
 health.impacts.Total10<-head(health.impacts,10)
-# health.impacts.Total10$EVTYPE<-factor(health.impacts.Total10$EVTYPE,
-#                                       levels=health.impacts.Total10$EVTYPE)
+health.impacts.Total10$EVTYPE<-factor(health.impacts.Total10$EVTYPE,
+                                       levels=health.impacts.Total10$EVTYPE)
 
 ggplot(data=health.impacts.Total10,aes(x=EVTYPE,y=TOTAL,fill=EVTYPE)) +
         geom_bar(stat="identity") +
@@ -184,21 +185,23 @@ eco.impacts.Total10<-head(eco.impacts,10)
 eco.impacts.Total10$EVTYPE<-factor(eco.impacts.Total10$EVTYPE,
                                       levels=eco.impacts.Total10$EVTYPE)
 
-ggplot(data=eco.impacts.Total10,aes(x=EVTYPE,y=TOTAL,fill=EVTYPE)) +
+#ggplot(data=eco.impacts.Total10,aes(x=EVTYPE,y=TOTAL,fill=EVTYPE)) +
+ggplot(data=eco.impacts.Total10,aes(x=EVTYPE,y=TOTAL)) +
         geom_bar(stat="identity") +
         scale_y_continuous(labels = dollar) +
         ggtitle("Total Economic impacts By Top 10 Weather Events") +
         theme(axis.text.x = element_text(angle = 90, hjust = 1),
               legend.position = "none")
 
-ggplot(data=eco.impacts.Total10,aes(x=EVTYPE,y=PROP,fill=EVTYPE)) +
+#ggplot(data=eco.impacts.Total10,aes(x=EVTYPE,y=PROP,fill=EVTYPE)) +
+ggplot(data=eco.impacts.Total10,aes(x=EVTYPE,y=PROP)) +
         geom_bar(stat="identity") +
         scale_y_continuous(labels = dollar) +
         ggtitle("Top 10 Weather Events Slicing by Property Damage") +
         theme(axis.text.x = element_text(angle = 90, hjust = 1),
               legend.position = "none")
-
-ggplot(data=eco.impacts.Total10,aes(x=EVTYPE,y=CROP,fill=EVTYPE)) +
+#ggplot(data=eco.impacts.Total10,aes(x=EVTYPE,y=CROP,fill=EVTYPE)) +
+ggplot(data=eco.impacts.Total10,aes(x=EVTYPE,y=CROP)) +
         geom_bar(stat="identity") +
         scale_y_continuous(labels = dollar) +
         ggtitle("Top 10 Weather Events Slicing by Crop Damage") +
