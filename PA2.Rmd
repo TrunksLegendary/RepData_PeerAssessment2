@@ -18,8 +18,12 @@ library(scales)
 
 ```{r setup.options, message=FALSE, warning=FALSE}
 Sys.setlocale("LC_TIME","C")
-opts_chunk$set(cache=TRUE)
 options(scipen=6)
+opts_chunk$set(cache=TRUE)
+# NOTES: 'opts_chunk$set(cache=TRUE)' is knitr cache option.
+# knitr has cache issue. If you encount some error when you try reproducible research.
+# please set 'cache=FALSE' or remove cache dir 'PA2_cache'.
+
 ```
 
 ## Synopsis
@@ -62,15 +66,13 @@ I extract columns describe Public Health or Economic Problems impact.
 |CROPDMGEXP|CROPDMG's exponent|
 
 ```{r, get.data}
-fileName <- 'repdata-data-StormData_s.csv'
-fileName_hon <- 'repdata-data-StormData.csv.bz2'
+fileName <- 'repdata-data-StormData.csv.bz2'
 fileURI <- 'https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2'
 
 if(!file.exists(fileName)) {
   download.file(fileURI, fileName, method = 'curl')
 }
-stormData <- read.csv(fileName,stringsAsFactors = FALSE)
-#stormData <- read.csv(bzfile(fileName),stringsAsFactors = FALSE)
+stormData <- read.csv(bzfile(fileName),stringsAsFactors = FALSE)
 
 stormData <- stormData %>%
     filter(FATALITIES > 0 | INJURIES > 0 | PROPDMG > 0 | CROPDMG > 0) %>%
@@ -211,7 +213,7 @@ crop.scale <- round(sum(eco.impacts$CROP,na.rm = TRUE)/sum(eco.impacts$PROP,na.r
 
 Total and Property Damage charts indicate Tornado has the greatest economic consequences.
 Although Crop Damage charts indicate Tornado damages is lower than others,
-The Crop Damage scale is **crop.scale** of the Property Damge.
+The Crop Damage scale is `r crop.scale` of the Property Damge.
 Therefore, Tornado has the greatest economic consequences.
 
 ### Tornado impacts summary
@@ -253,11 +255,14 @@ tornade.ec.per <- round(sum(tornado.ec[tornado.ec$EV_TORNADO==TRUE,]$IMPACT)
 
 ```
 
-Tornado has population health impacts `tornade.ph.per`% of total events. It is totally high.
-Tornado has ecnomic impacts `tornade.ec.per`% of total events. Especially property damage is high.
+Tornado has population health impacts `r tornade.ph.per`% of total events. It is totally high.
+Tornado has ecnomic impacts `r tornade.ec.per`% of total events. Especially property damage is high.
 
 ## Conclustions
 
 * Tornado events have the most impacts both public health and economic problems.
-* Tornado has population health impacts `tornade.ph.per`% of total events. It is totally high.
-* Tornado has ecnomic impacts `tornade.ec.per`% of total events. Especially property damage is high.
+* Tornado has population health impacts `r tornade.ph.per`% of total events. It is totally high.
+* Tornado has ecnomic impacts `r tornade.ec.per`% of total events. Especially property damage is high.
+
+
+
