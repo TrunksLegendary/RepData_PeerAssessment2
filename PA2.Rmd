@@ -183,10 +183,10 @@ eco.impacts <- stormData %>% group_by(EVTYPE) %>%
               TOTAL=PROP+CROP) %>%
     arrange(desc(TOTAL),desc(PROP),desc(CROP))
 eco.impacts.Total10<-head(eco.impacts,10)
-eco.impacts.Total10$EVTYPE.ECO<-factor(eco.impacts.Total10$EVTYPE,
+eco.impacts.Total10$EVTYPE<-factor(eco.impacts.Total10$EVTYPE,
                                       levels=eco.impacts.Total10$EVTYPE)
 
-ggplot(data=eco.impacts.Total10,aes(x=EVTYPE.ECO,y=TOTAL,fill=EVTYPE)) +
+ggplot(data=eco.impacts.Total10,aes(x=EVTYPE,y=TOTAL,fill=EVTYPE)) +
         geom_bar(stat="identity") +
         scale_y_continuous(labels = dollar) +
         ggtitle("Total Economic impacts By Top 10 Weather Events") +
@@ -211,58 +211,15 @@ crop.scale <- round(sum(eco.impacts$CROP,na.rm = TRUE)/sum(eco.impacts$PROP,na.r
 
 ```
 
-Total and Property Damage charts indicate Tornado has the greatest economic consequences.
-Although Crop Damage charts indicate Tornado damages is lower than others,
-The Crop Damage scale is `r crop.scale` of the Property Damge.
-Therefore, Tornado has the greatest economic consequences.
-
-### Tornado impacts summary
-Tornado events have the most impacts both public health and economic problems.
-I summaraise Tornado events impacts.
-
-```{r tornado.impacts}
-tornado.ph <-stormData %>% mutate(EV_TORNADO=grepl("TORNADO",stormData$EVTYPE)) %>%
-    group_by(EV_TORNADO) %>%
-        summarise(
-                FATALITIES=sum(FATALITIES),
-                INJURIES=sum(INJURIES)
-        ) %>% mutate(EV_TORNADO = factor(EV_TORNADO,levels = c(TRUE,FALSE))) %>%
-         gather(DAMAGE,IMPACT,-EV_TORNADO)
-
-tornado.ec <-stormData %>% mutate(EV_TORNADO=grepl("TORNADO",stormData$EVTYPE)) %>%
-    group_by(EV_TORNADO) %>%
-        summarise(
-                PROP=sum(PROPDMGNUM, na.rm = TRUE),
-                CROP=sum(CROPDMGNUM, na.rm = TRUE)
-        ) %>% mutate(EV_TORNADO = factor(EV_TORNADO,levels = c(TRUE,FALSE))) %>%
-         gather(DAMAGE,IMPACT,-EV_TORNADO)
-
-ggplot(data=tornado.ph,aes(x=EV_TORNADO,y=IMPACT,fill=EV_TORNADO)) +
-        geom_bar(stat="identity") +
-        ggtitle("Population Health Impacts by Tornado and Others") +
-        theme(axis.text.x = element_text(angle = 90, hjust = 1))
-
-
-ggplot(data=tornado.ec,aes(x=EV_TORNADO,y=IMPACT,fill=EV_TORNADO)) +
-        geom_bar(stat="identity") +
-        ggtitle("Economic Impacts by Tornado and Others") +
-        theme(axis.text.x = element_text(angle = 90, hjust = 1))
-
-tornade.ph.per <- round(sum(tornado.ph[tornado.ph$EV_TORNADO==TRUE,]$IMPACT)
-                        /sum(tornado.ph$IMPACT),2)
-tornade.ec.per <- round(sum(tornado.ec[tornado.ec$EV_TORNADO==TRUE,]$IMPACT)
-                        /sum(tornado.ec$IMPACT),2)
-
-```
-
-Tornado has population health impacts `r tornade.ph.per`% of total events. It is totally high.
-Tornado has ecnomic impacts `r tornade.ec.per`% of total events. Especially property damage is high.
+Total and Property Damage charts indicate Flood, Hurricane/Typoon and Tornado  
+are the greatest economic consequences.
+And also, Crop Damage charts indicate Droughtis is  
+the greatest economic consequences in crop.
 
 ## Conclustions
 
-* Tornado events have the most impacts both public health and economic problems.
-* Tornado has population health impacts `r tornade.ph.per`% of total events. It is totally high.
-* Tornado has ecnomic impacts `r tornade.ec.per`% of total events. Especially property damage is high.
-
+* Tornado is most harmful to population health.
+* Flood, Hurricane/Typoon and Tornado are the greatest economic consequences.
+* However, in crop damage, Drought also has the greatest economic consequences.
 
 
