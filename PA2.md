@@ -1,13 +1,9 @@
----
-title: "Weather Events Impact Analysis -- Public Health and Economic Problems Across the United States"
-author: "hajozaki"
-date: "July 23, 2015"
-output: 
-  html_document:
-    keep_md: true
----
+# Weather Events Impact Analysis -- Public Health and Economic Problems Across the United States
+hajozaki  
+July 23, 2015  
 
-```{r library.load, message=FALSE, warning=FALSE}
+
+```r
 library(knitr)
 library(tidyr)
 library(dplyr)
@@ -16,14 +12,21 @@ library(ggplot2)
 library(scales)
 ```
 
-```{r setup.options, message=FALSE, warning=FALSE}
+
+```r
 Sys.setlocale("LC_TIME","C")
+```
+
+```
+## [1] "C"
+```
+
+```r
 options(scipen=6)
 opts_chunk$set(cache=TRUE)
 # NOTES: 'opts_chunk$set(cache=TRUE)' is knitr cache option.
 # knitr has cache issue. If you encount some error when you try reproducible research.
 # please set 'cache=FALSE' or remove cache dir 'PA2_cache'.
-
 ```
 
 ## Synopsis
@@ -65,7 +68,8 @@ I extract columns describe Public Health or Economic Problems impact.
 |CROPDMG|Economic crop damage|
 |CROPDMGEXP|CROPDMG's exponent|
 
-```{r, get.data}
+
+```r
 fileName <- 'repdata-data-StormData.csv.bz2'
 fileURI <- 'https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2'
 
@@ -83,6 +87,18 @@ stormData <- stormData %>%
 str(stormData)
 ```
 
+```
+## 'data.frame':	254633 obs. of  8 variables:
+##  $ BGN_DATE  : POSIXct, format: "1950-04-18" "1950-04-18" ...
+##  $ EVTYPE    : chr  "TORNADO" "TORNADO" "TORNADO" "TORNADO" ...
+##  $ FATALITIES: num  0 0 0 0 0 0 0 0 1 0 ...
+##  $ INJURIES  : num  15 0 2 2 2 6 1 0 14 0 ...
+##  $ PROPDMG   : num  25 2.5 25 2.5 2.5 2.5 2.5 2.5 25 25 ...
+##  $ PROPDMGEXP: chr  "K" "K" "K" "K" ...
+##  $ CROPDMG   : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ CROPDMGEXP: chr  "" "" "" "" ...
+```
+
 ### Cleaning Data
 
 Create economic damge number fields with DMG and DMGEXP columns.
@@ -94,7 +110,8 @@ So I convert it and calculate damage number and add berow the columns.
 |PROPDMGNUM|Economic property damage impact number(USD)|
 |CROPDMGNUM|Economic crop damage impact number(USD)|
 
-```{r cleaning.dmgexp}
+
+```r
 calcDmg <- function(dmg, exp){
     pw <- 0
     exp<-tryCatch(as.numeric(exp), warning=function(e){exp})
@@ -115,19 +132,20 @@ calcDmg <- function(dmg, exp){
 
 stormData$PROPDMGNUM  <- mapply(calcDmg,stormData$PROPDMG,stormData$PROPDMGEXP)
 stormData$CROPDMGNUM <- mapply(calcDmg,stormData$CROPDMG,stormData$CROPDMGEXP)
-
 ```
 
 ## Results
 ### Overview
 
-```{r results.overview}
+
+```r
 stormData$YEAR<-as.numeric(format(stormData$BGN_DATE, "%Y"))
 hist(stormData$YEAR,
      breaks=seq(min(stormData$YEAR),max(stormData$YEAR),by=1),
      freq = TRUE)
-
 ```
+
+![](PA2_files/figure-html/results.overview-1.png) 
 
 The number of events significantly increase around 1993.
 It maybe caused storm data database developed aroud this year.
@@ -137,7 +155,8 @@ But It aside, recent years (2008-2011) it remarkble increased.
 
 **Which types of events are most harmful to population health?**
 
-```{r health.impacts}
+
+```r
 health.impacts <- stormData %>% group_by(EVTYPE) %>%
     summarise(FATALITIES=sum(FATALITIES),
               INJURIES=sum(INJURIES),
@@ -153,22 +172,31 @@ ggplot(data=health.impacts.Total10,aes(x=EVTYPE,y=TOTAL,fill=EVTYPE)) +
         ggtitle("Total Health impacts By Top 10 Weather Events") +
         theme(axis.text.x = element_text(angle = 90, hjust = 1),
               legend.position = "none")
+```
 
+![](PA2_files/figure-html/health.impacts-1.png) 
+
+```r
 ggplot(data=health.impacts.Total10,aes(x=EVTYPE,y=FATALITIES,fill=EVTYPE)) +
         geom_bar(stat="identity") +
         scale_y_continuous(labels = comma) +
         ggtitle("Top 10 Weather Events Slicing by Fatalities") +
         theme(axis.text.x = element_text(angle = 90, hjust = 1),
               legend.position = "none")
+```
 
+![](PA2_files/figure-html/health.impacts-2.png) 
+
+```r
 ggplot(data=health.impacts.Total10,aes(x=EVTYPE,y=INJURIES,fill=EVTYPE)) +
         geom_bar(stat="identity") +
         scale_y_continuous(labels = comma) +
         ggtitle("Top 10 Weather Events Slicing by Injuries") +
         theme(axis.text.x = element_text(angle = 90, hjust = 1),
               legend.position = "none")
-
 ```
+
+![](PA2_files/figure-html/health.impacts-3.png) 
 
 Three charts indicate Tornado is most harmful to population health.
 
@@ -176,7 +204,8 @@ Three charts indicate Tornado is most harmful to population health.
 
 **Which types of events have the greatest economic consequences?**
 
-```{r eco.impacts}
+
+```r
 eco.impacts <- stormData %>% group_by(EVTYPE) %>%
     summarise(PROP=sum(PROPDMGNUM, na.rm = TRUE),
               CROP=sum(CROPDMGNUM, na.rm = TRUE),
@@ -192,23 +221,34 @@ ggplot(data=eco.impacts.Total10,aes(x=EVTYPE,y=TOTAL,fill=EVTYPE)) +
         ggtitle("Total Economic impacts By Top 10 Weather Events") +
         theme(axis.text.x = element_text(angle = 90, hjust = 1),
               legend.position = "none")
+```
 
+![](PA2_files/figure-html/eco.impacts-1.png) 
+
+```r
 ggplot(data=eco.impacts.Total10,aes(x=EVTYPE,y=PROP,fill=EVTYPE)) +
         geom_bar(stat="identity") +
         scale_y_continuous(labels = dollar) +
         ggtitle("Top 10 Weather Events Slicing by Property Damage") +
         theme(axis.text.x = element_text(angle = 90, hjust = 1),
               legend.position = "none")
+```
 
+![](PA2_files/figure-html/eco.impacts-2.png) 
+
+```r
 ggplot(data=eco.impacts.Total10,aes(x=EVTYPE,y=CROP,fill=EVTYPE)) +
         geom_bar(stat="identity") +
         scale_y_continuous(labels = dollar) +
         ggtitle("Top 10 Weather Events Slicing by Crop Damage") +
         theme(axis.text.x = element_text(angle = 90, hjust = 1),
               legend.position = "none")
+```
 
+![](PA2_files/figure-html/eco.impacts-3.png) 
+
+```r
 crop.scale <- round(sum(eco.impacts$CROP,na.rm = TRUE)/sum(eco.impacts$PROP,na.rm = TRUE),2)
-
 ```
 
 Total and Property Damage charts indicate Flood, Hurricane/Typoon and Tornado  
